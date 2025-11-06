@@ -25,14 +25,14 @@ public class MovieGenre {
                 int affectedRows = pstmt.executeUpdate();
 
                 if(affectedRows == 0) {
-                    throw new SQLException("Erstellen von Movie fehlgeschlagen, keine Zeilen geändert.");
+                    throw new SQLException("Erstellen von MovieGenre fehlgeschlagen, keine Zeilen geändert.");
                 }
 
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         this.movieGenreID = generatedKeys.getLong(1);
                     } else {
-                        throw new SQLException("Erstellen von Movie fehlgeschlagen, keine ID erhalten.");
+                        throw new SQLException("Erstellen von MovieGenre fehlgeschlagen, keine ID erhalten.");
                     }
                 }
         }

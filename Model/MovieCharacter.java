@@ -30,14 +30,14 @@ public class MovieCharacter {
                 int affectedRows = pstmt.executeUpdate();
 
                 if(affectedRows == 0) {
-                    throw new SQLException("Erstellen von Person fehlgeschlagen, keine Zeilen geändert.");
+                    throw new SQLException("Erstellen von MovieCharacter fehlgeschlagen, keine Zeilen geändert.");
                 }
 
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         this.movCharID = generatedKeys.getLong(1);
                     } else {
-                        throw new SQLException("Erstellen von Person fehlgeschlagen, keine ID erhalten.");
+                        throw new SQLException("Erstellen von MovieCharacter fehlgeschlagen, keine ID erhalten.");
                     }
                 }
         }
