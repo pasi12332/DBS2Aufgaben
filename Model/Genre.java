@@ -7,10 +7,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import Service.DBConnection;
 
+/**
+ * ActiveRecord-Klasse für Genre-Entität.
+ * Repräsentiert ein Film-Genre in der Datenbank.
+ */
 public class Genre {
     private Long genreID;
     private String genre;
 
+    /**
+     * Fügt ein neues Genre in die Datenbank ein.
+     * Die generierte ID wird in genreID gespeichert.
+     * 
+     * @throws SQLException wenn ein Datenbankfehler auftritt
+     */
     public void insert() throws SQLException {
         String sql = "INSERT INTO genre (genre) Values (?)";
         try(Connection conn = DBConnection.getConnection();
@@ -34,5 +44,24 @@ public class Genre {
         }
     }
 
+    /**
+     * Setzt den Genre-Namen.
+     * 
+     * @param genre der Name des Genres
+     */
     public void setGenre(String genre) { this.genre = genre; }
+    
+    /**
+     * Gibt die Genre-ID zurück.
+     * 
+     * @return die Genre-ID
+     */
+    public Long getGenreId() { return this.genreID; }
+    
+    /**
+     * Gibt den Genre-Namen zurück.
+     * 
+     * @return der Genre-Name
+     */
+    public String getGenre() { return this.genre; }
 }

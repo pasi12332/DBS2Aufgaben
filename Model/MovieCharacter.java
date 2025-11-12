@@ -8,6 +8,10 @@ import java.sql.Statement;
 
 import Service.DBConnection;
 
+/**
+ * ActiveRecord-Klasse für MovieCharacter-Entität.
+ * Repräsentiert die Zuordnung einer Person zu einer Rolle in einem Film.
+ */
 public class MovieCharacter {
     Long movCharID;
     Long movieID;
@@ -16,8 +20,14 @@ public class MovieCharacter {
     String alias;
     int position;
     
+    /**
+     * Fügt einen neuen Movie-Character in die Datenbank ein.
+     * Die generierte ID wird in movCharID gespeichert.
+     * 
+     * @throws SQLException wenn ein Datenbankfehler auftritt
+     */
     public void insert() throws SQLException {
-        String sql = "INSERT INTO moviecharacter (movieID, personID, character, alias, position) Values (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO moviecharacter (movieid, personid, character, alias, position) Values (?, ?, ?, ?, ?)";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -43,9 +53,80 @@ public class MovieCharacter {
         }
     }
 
+    /**
+     * Setzt die Film-ID.
+     * 
+     * @param movieID die ID des Films
+     */
     public void setMovieId(Long movieID) { this.movieID = movieID; }
+    
+    /**
+     * Setzt die Person-ID (Schauspieler).
+     * 
+     * @param personID die ID der Person
+     */
     public void setPlayerId(Long personID) { this.personID = personID; }
+    
+    /**
+     * Setzt den Charakternamen.
+     * 
+     * @param character der Name des Charakters
+     */
     public void setCharacter(String character) { this.character = character; }
+    
+    /**
+     * Setzt den Alias des Charakters.
+     * 
+     * @param alias der Alias (Optional)
+     */
     public void setAlias(String alias) { this.alias = alias; }
+    
+    /**
+     * Setzt die Position/Reihenfolge des Charakters im Film.
+     * 
+     * @param position die Position
+     */
     public void setPosition(int position) { this.position = position; }
+    
+    /**
+     * Gibt die MovieCharacter-ID zurück.
+     * 
+     * @return die MovieCharacter-ID
+     */
+    public Long getMovCharId() { return this.movCharID; }
+    
+    /**
+     * Gibt die Film-ID zurück.
+     * 
+     * @return die Film-ID
+     */
+    public Long getMovieId() { return this.movieID; }
+    
+    /**
+     * Gibt die Person-ID zurück.
+     * 
+     * @return die Person-ID
+     */
+    public Long getPlayerId() { return this.personID; }
+    
+    /**
+     * Gibt den Charakternamen zurück.
+     * 
+     * @return der Charaktername
+     */
+    public String getCharacter() { return this.character; }
+    
+    /**
+     * Gibt den Alias des Charakters zurück.
+     * 
+     * @return der Alias
+     */
+    public String getAlias() { return this.alias; }
+    
+    /**
+     * Gibt die Position des Charakters zurück.
+     * 
+     * @return die Position
+     */
+    public int getPosition() { return this.position; }
 }

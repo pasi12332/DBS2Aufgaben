@@ -8,10 +8,20 @@ import java.sql.Statement;
 
 import Service.DBConnection;
 
+/**
+ * ActiveRecord-Klasse für Person-Entität.
+ * Repräsentiert eine Person (Schauspieler/in) in der Datenbank.
+ */
 public class Person {
     Long personID;
     String name;
 
+    /**
+     * Fügt eine neue Person in die Datenbank ein.
+     * Die genierte ID wird in personID gespeichert.
+     * 
+     * @throws SQLException wenn ein Datenbankfehler auftritt
+     */
     public void insert() throws SQLException {
         String sql = "INSERT INTO person (name) Values (?)";
         try(Connection conn = DBConnection.getConnection();
@@ -34,7 +44,25 @@ public class Person {
                 }
         }
     }
+    
+    /**
+     * Setzt den Namen der Person.
+     * 
+     * @param name der Name der Person
+     */
     public void setName(String name) { this.name = name; }
 
-    public Long getPersonID(){ return this.personID; }
+    /**
+     * Gibt die ID der Person zurück.
+     * 
+     * @return die Person-ID
+     */
+    public Long getPersonId(){ return this.personID; }
+    
+    /**
+     * Gibt den Namen der Person zurück.
+     * 
+     * @return der Name der Person
+     */
+    public String getName() { return this.name; }
 }
