@@ -49,7 +49,7 @@ public class MovieFactory {
      */
     public static List<Movie> findByTitle(String title) throws SQLException {
         List<Movie> movies = new ArrayList<>();
-        String sql = "SELECT movieid, title, year, type FROM movie WHERE title ILIKE ?";
+        String sql = "SELECT movieid, title, year, type FROM movie WHERE title ILIKE ?"; // ILIKE ignoriert klein/großschr. im gegensatz zu LIKE
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
