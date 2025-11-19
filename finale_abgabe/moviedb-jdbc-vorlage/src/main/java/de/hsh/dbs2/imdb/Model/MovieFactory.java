@@ -84,13 +84,36 @@ public class MovieFactory {
         }
         return movies;
     }
-    public static void deleteCharactersByMovieId(long movieId)throws Exception {
+
+
+    public static void deleteCharactersByMovieId(long movieId) throws Exception {
         String sql = "DELETE FROM moviecharacter WHERE movieID = ?";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setLong(1, movieId);
             pstmt.executeUpdate();
+        }
+    }
+
+
+    public static List<MovieCharacter> getCharacterByMovieId(long movieid) throws Exception {
+        List<MovieCharacter> chracters = new ArrayList<>();
+        String sql = "SELECT * FROM MovieCharacter WHERE movieid = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setLong(1, movieid);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                MovieCharacter movieCharacter = new MovieCharacter(rs.getLong("movcharID"));
+                movieCharacter.setAlias(rs.getString("alias"));
+                movieCharacter.setCharacter(rs.getString("character"));
+                movieCharacter.setPosition(rs.getInt("position"));
+                movieCharacter.setMovieId(movieid);
+                movieCharacter.setPlayerId(rs.getLong("personID"));
+            }
+            return chracters;
         }
     }
 }

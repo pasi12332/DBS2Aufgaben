@@ -38,6 +38,22 @@ public class PersonFactory {
 		}
 	}
 
+
+	public static String getNameByID(Long playerID) throws Exception {
+		String sql = "SELECT * FROM person WHERE personID = ?";
+		try (Connection conn = DBConnection.getConnection();
+			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, playerID);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("name");
+				} else {
+					throw new DoesNotExistException("Person '" + playerID + "' nicht gefunden");
+				}
+			}
+		}
+	}
+
 	/**
 	 * Returns a list of all person names containing the given search string (case-insensitive).
 	 *
