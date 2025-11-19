@@ -10,10 +10,21 @@ import java.util.List;
 import de.hsh.dbs2.imdb.persistence.DoesNotExistException;
 import de.hsh.dbs2.imdb.util.DBConnection;
 
+/**
+ * Factory class for person-related database operations.
+ */
 public class PersonFactory {
 
-    public static long findByName(String name) throws SQLException, DoesNotExistException {
-        String sql = "SELECT personID FROM person WHERE name = ?";
+	/**
+	 * Finds a person by exact name and returns their personID.
+	 *
+	 * @param name the exact name of the person to search for
+	 * @return the personID of the found person
+	 * @throws SQLException if a database access error occurs
+	 * @throws DoesNotExistException if no person with the given name exists
+	 */
+	public static long findByName(String name) throws SQLException, DoesNotExistException {
+		String sql = "SELECT personID FROM person WHERE name = ?";
 		try (Connection conn = DBConnection.getConnection();
 			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, name);
@@ -25,12 +36,20 @@ public class PersonFactory {
 				}
 			}
 		}
-    }
-    public static List<String> getPersonListByName(String name) throws Exception {
+	}
+
+	/**
+	 * Returns a list of all person names containing the given search string (case-insensitive).
+	 *
+	 * @param name the search string to look for in person names
+	 * @return a list of matching person names
+	 * @throws Exception if a database access error occurs
+	 */
+	public static List<String> getPersonListByName(String name) throws Exception {
 		String sql = "SELECT name FROM person WHERE name ILIKE ?";
 		List<String> resultList = new ArrayList<>();
 		try (Connection conn = DBConnection.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, "%" + name + "%");
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
@@ -41,5 +60,5 @@ public class PersonFactory {
 		}
 		return resultList;
 	}
-    
+
 }
