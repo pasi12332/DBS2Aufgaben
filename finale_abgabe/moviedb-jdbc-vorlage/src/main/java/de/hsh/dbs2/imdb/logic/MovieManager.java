@@ -6,12 +6,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import de.hsh.dbs2.imdb.logic.dto.CharacterDTO;
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
 
 import de.hsh.dbs2.imdb.util.DBConnection;
 import de.hsh.dbs2.imdb.Model.Genre;
 import de.hsh.dbs2.imdb.Model.GenreFactory;
 import de.hsh.dbs2.imdb.Model.Movie;
+import de.hsh.dbs2.imdb.Model.MovieCharacter;
 import de.hsh.dbs2.imdb.Model.MovieFactory;
 import de.hsh.dbs2.imdb.Model.MovieGenre;
 import de.hsh.dbs2.imdb.Model.MovieGenreFactory;
@@ -68,12 +70,25 @@ public class MovieManager {
 			movie.setTitle(movieDTO.getTitle());
 			movie.setType(movieDTO.getType());
 			movie.setYear(movieDTO.getYear());
-			for(MovieGenre genre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
+			for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
+				movieGenre.delete();
+			}
+			// MovieFactory.deleteCharacterByMovieID(movieDTO.getID())
+			for(CharacterDTO character : movieDTO.getCharacters()) {
 				
 			}
 			for(String genreS : movieDTO.getGenres()) {
-				
+				Genre genre = GenreFactory.findeByGenre(genreS);
+				if(genre.equals(null)) {
+					// abbruch
+				} else {
+					MovieGenre movieGenre = new MovieGenre();
+					movieGenre.setGenreId(genre.getGenreId());
+					movieGenre.setMovieId(movieDTO.getId());
+					movieGenre.insert();
+				}
 			}
+
 			movie.update();
 		}
 	}

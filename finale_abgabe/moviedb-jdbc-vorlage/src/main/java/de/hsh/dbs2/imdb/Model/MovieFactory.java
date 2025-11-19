@@ -51,8 +51,8 @@ public class MovieFactory {
 
     public static List<Movie> getAll() throws Exception {
         List<Movie> movies = new ArrayList<>();
-        String sql;
-        try (Connection conn = DBConnection.getConnection()
+        String sql = "SELECT * FROM movie";
+        try (Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {

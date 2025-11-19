@@ -45,5 +45,18 @@ public class GenreFactory {
         }
     }
 
+    public static Genre findeByGenre(String genreS) throws Exception {
+        String sql = "SELECT * FROM genre WHERE genre = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, genreS);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    return loadGenre(rs);
+                }
+                return null;
+            }
+    }
+
 
 }
