@@ -17,6 +17,8 @@ import de.hsh.dbs2.imdb.Model.MovieCharacter;
 import de.hsh.dbs2.imdb.Model.MovieFactory;
 import de.hsh.dbs2.imdb.Model.MovieGenre;
 import de.hsh.dbs2.imdb.Model.MovieGenreFactory;
+import de.hsh.dbs2.imdb.Model.Person;
+import de.hsh.dbs2.imdb.Model.PersonFactory;
 
 public class MovieManager {
 
@@ -73,8 +75,9 @@ public class MovieManager {
 			for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
 				movieGenre.delete();
 			}
-			// MovieFactory.deleteCharacterByMovieID(movieDTO.getID())
+			MovieFactory.deleteCharactersByMovieId(movieDTO.getId());
 			for(CharacterDTO character : movieDTO.getCharacters()) {
+				long personid = PersonFactory.findByName(character.getPlayer());
 				
 			}
 			for(String genreS : movieDTO.getGenres()) {
