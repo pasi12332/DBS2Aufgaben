@@ -1,0 +1,15 @@
+de\hsh\dbs2\imdb\persistence\DoesNotExistException.class
+de\hsh\dbs2\imdb\Model\MovieCharacter.class
+de\hsh\dbs2\imdb\gui\MovieDialog$1.class
+de\hsh\dbs2\imdb\gui\TabModelCharacter.class
+de\hsh\dbs2\imdb\gui\MovieDialog.class
+de\hsh\dbs2\imdb\util\DBConnection.class
+de\hsh\dbs2\imdb\logic\MovieManager.class
+de\hsh\dbs2\imdb\logic\PersonManager.class
+de\hsh\dbs2\imdb\Model\MovieFactory.class
+de\hsh\dbs2\imdb\gui\MovieDialogCallback.class
+de\hsh\dbs2\imdb\logic\dto\CharacterDTO.class
+de\hsh\dbs2\imdb\Model\MovieGenre.class
+de\hsh\dbs2\imdb\Model\Person.class
+de\hsh\dbs2\imdb\logic\dto\MovieDTO.class
+de\hsh\dbs2\imdb\Model\Movie.class

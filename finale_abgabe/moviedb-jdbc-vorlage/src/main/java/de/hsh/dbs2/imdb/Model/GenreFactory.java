@@ -58,5 +58,21 @@ public class GenreFactory {
             }
     }
 
+    public static List<Genre> getAll() throws Exception {
+        List<Genre> genres = new ArrayList<>();
+        String sql = "SELECT * FROM genre ORDER BY genre ASC";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                genres.add(loadGenre(rs));
+            }
+            return genres;
+        }
+        
+    }
+
+    
+
 
 }
