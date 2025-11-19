@@ -1,16 +1,28 @@
 package de.hsh.dbs2.imdb.logic;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
 
-import de.hsh.dbs2.imdb.util.DBConnection;;
+import de.hsh.dbs2.imdb.util.DBConnection;
+import de.hsh.dbs2.imdb.Model.Movie;
 
 public class MovieManager {
+
+	public MovieDTO loadMovie(ResultSet rs) throws Exception {
+		MovieDTO movie = new MovieDTO();
+		GenreManager genreManager = new GenreManager();
+		movie.setId(rs.getLong("movieid"));
+		movie.setTitle(rs.getString("title"));
+		movie.setYear(rs.getInt("year"));
+		movie.setType(rs.getString("type"));
+		movie.setGenres(genreManager.getGenresByMovie(rs.getLong("movieid")));
+		return movie;
+	}
 
 	/**
 	 * Ermittelt alle Filme, deren Filmtitel den Suchstring enthaelt.
@@ -21,18 +33,23 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public List<MovieDTO> getMovieList(String search) throws Exception {
-		if (search.equals(null) || search.equals("")) {
-			String sql = "SELECT * FROM movie";
-			try (Connection conn = DBConnection.getConnection()) {
-				PreparedStatement pstmt  = conn.prepareStatement(sql);
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-					
-				}
+		List<MovieDTO> movieList = new ArrayList<MovieDTO>();
+		PreparedStatement pstmt;
+		try (Connection conn = DBConnection.getConnection()) {
+			if (search.equals(null) || search.equals("")) {
+				String sql = "SELECT * FROM movie";
+				pstmt  = conn.prepareStatement(sql);
+			} else {
+				String sql = "Selecte * FROM movie WHERE title ILIKE ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, search);
+			}
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				movieList.add(loadMovie(rs));
 			}
 		}
-		return null;
+		return movieList;
 	}
 
 	/**
@@ -45,7 +62,36 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public void insertUpdateMovie(MovieDTO movieDTO) throws Exception {		
-		/* TODO */
+		String sql = "SELECT movieid FROM movie WHERE movieid = ?";
+		PreparedStatement pstmt;
+		ResultSet rs;
+		Movie movie;
+
+		try(Connection conn = DBConnection.getConnection()) {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, movieDTO.getId());
+			rs =  pstmt.executeQuery();
+			if(rs.next()) {
+				movie = new Movie(movieDTO.getId());
+				movie.setTitle(movieDTO.getTitle());
+				movie.setType(movieDTO.getType());
+				movie.setYear(movieDTO.getYear());
+				movie.update();
+			}
+			else {
+				movie = new Movie();
+				movie.setTitle(movieDTO.getTitle());
+				movie.setType(movieDTO.getType());
+				movie.setYear(movieDTO.getYear());
+				movie.insert();
+
+				for (String genre : movieDTO.getGenres()) {
+					sql = "SELECT genreid WHERE genre = ";
+				}
+
+			}
+			
+		}
 	}
 
 	/**
