@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
 import de.hsh.dbs2.imdb.util.DBConnection;
 
 /**
@@ -14,10 +17,10 @@ import de.hsh.dbs2.imdb.util.DBConnection;
  * Bietet Methoden zum Einfügen, Aktualisieren und Löschen.
  */
 public class Movie {
-    Long movieID;
-    String title;
-    int year;
-    String type;
+    private Long movieID;
+    private String title;
+    private int year;
+    private String type;
 
 
     public Movie(Long movieID) {
@@ -100,6 +103,7 @@ public class Movie {
                 }
         }
     }
+
 
     /**
      * Setzt den Filmtitel.

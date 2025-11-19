@@ -9,19 +9,22 @@ import java.sql.ResultSet;
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
 
 import de.hsh.dbs2.imdb.util.DBConnection;
+import de.hsh.dbs2.imdb.Model.Genre;
+import de.hsh.dbs2.imdb.Model.GenreFactory;
 import de.hsh.dbs2.imdb.Model.Movie;
+import de.hsh.dbs2.imdb.Model.MovieFactory;
 
 public class MovieManager {
 
-	public MovieDTO loadMovie(ResultSet rs) throws Exception {
-		MovieDTO movie = new MovieDTO();
+	public MovieDTO loadMovieDTO(Movie movie) throws Exception {
+		MovieDTO movieDTO = new MovieDTO();
 		GenreManager genreManager = new GenreManager();
-		movie.setId(rs.getLong("movieid"));
-		movie.setTitle(rs.getString("title"));
-		movie.setYear(rs.getInt("year"));
-		movie.setType(rs.getString("type"));
-		movie.setGenres(genreManager.getGenresByMovie(rs.getLong("movieid")));
-		return movie;
+		movieDTO.setId(movie.getMovieId());
+		movieDTO.setTitle(movie.getTitle());
+		movieDTO.setYear(movie.getYear());
+		movieDTO.setType(movie.getType());
+		movieDTO.setGenres(genreManager.getGenresByMovie(movie.getMovieId()));
+		return movieDTO;
 	}
 
 	/**
@@ -33,23 +36,19 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public List<MovieDTO> getMovieList(String search) throws Exception {
-		List<MovieDTO> movieList = new ArrayList<MovieDTO>();
-		PreparedStatement pstmt;
-		try (Connection conn = DBConnection.getConnection()) {
-			if (search.equals(null) || search.equals("")) {
-				String sql = "SELECT * FROM movie";
-				pstmt  = conn.prepareStatement(sql);
-			} else {
-				String sql = "Selecte * FROM movie WHERE title ILIKE ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, search);
+		List<MovieDTO> movieListDOT = new ArrayList<>();
+
+		if (search.equals(null) || search.equals("")) {
+			for (Movie movie : MovieFactory.getAll()) {
+				movieListDOT.add(loadMovieDTO(movie));
 			}
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				movieList.add(loadMovie(rs));
-			}
+		} else {
+			for (Movie movie : MovieFactory.findByTitle(search)) {
+				movieListDOT.add(loadMovieDTO(movie));
+			}	
 		}
-		return movieList;
+		
+		return movieListDOT;
 	}
 
 	/**
@@ -62,35 +61,17 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public void insertUpdateMovie(MovieDTO movieDTO) throws Exception {		
-		String sql = "SELECT movieid FROM movie WHERE movieid = ?";
-		PreparedStatement pstmt;
-		ResultSet rs;
-		Movie movie;
-
-		try(Connection conn = DBConnection.getConnection()) {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, movieDTO.getId());
-			rs =  pstmt.executeQuery();
-			if(rs.next()) {
-				movie = new Movie(movieDTO.getId());
-				movie.setTitle(movieDTO.getTitle());
-				movie.setType(movieDTO.getType());
-				movie.setYear(movieDTO.getYear());
-				movie.update();
-			}
-			else {
-				movie = new Movie();
-				movie.setTitle(movieDTO.getTitle());
-				movie.setType(movieDTO.getType());
-				movie.setYear(movieDTO.getYear());
-				movie.insert();
-
-				for (String genre : movieDTO.getGenres()) {
-					sql = "SELECT genreid WHERE genre = ";
+		Movie movie = MovieFactory.findById(movieDTO.getId());
+		if(movie != null) {
+			movie.setTitle(movieDTO.getTitle());
+			movie.setType(movieDTO.getType());
+			movie.setYear(movieDTO.getYear());
+			for(Genre genre : GenreFactory.findByMovie(movie.getMovieId())) {
+				if(!movieDTO.getGenres().contains(genre.getGenre())){
+					
 				}
-
 			}
-			
+			movie.update();
 		}
 	}
 
