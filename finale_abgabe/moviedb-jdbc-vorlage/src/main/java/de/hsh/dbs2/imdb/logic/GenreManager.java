@@ -1,5 +1,6 @@
 package de.hsh.dbs2.imdb.logic;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class GenreManager {
@@ -12,6 +13,10 @@ public class GenreManager {
 	 */
 	public List<String> getGenres() throws Exception {
 		/* TODO */
+		return null;
+	}
+
+	public HashSet<String> getGenresByMovie(Long movieID) throws Exception {
 		return null;
 	}
 
