@@ -15,6 +15,10 @@ public class Genre {
     private Long genreID;
     private String genre;
 
+
+    public Genre() {}
+    public Genre(Long genreID) { this.genreID = genreID; }
+
     /**
      * Fügt ein neues Genre in die Datenbank ein.
      * Die generierte ID wird in genreID gespeichert.

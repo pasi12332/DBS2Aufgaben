@@ -15,14 +15,25 @@ import de.hsh.dbs2.imdb.util.DBConnection;
  */
 public class MovieFactory {
     
+
+
+    private static Movie loadMovie(ResultSet rs) throws Exception {
+        Movie movie = new Movie(rs.getLong("movieid"));
+        movie.setTitle(rs.getString("title"));
+        movie.setYear(rs.getInt("year"));
+        movie.setType(rs.getString("type"));
+        return movie;
+    }
+
+
     /**
      * Findet einen Film anhand seiner ID
      * @param id Die ID des Films
      * @return Ein Movie-Objekt oder null, wenn kein Film gefunden wurde
      * @throws SQLException
      */
-    public static Movie findById(long id) throws SQLException {
-        String sql = "SELECT movieid, title, year, type FROM movie WHERE movieid = ?";
+    public static Movie findById(long id) throws Exception {
+        String sql = "SELECT * FROM movie WHERE movieid = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
@@ -30,15 +41,26 @@ public class MovieFactory {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                Movie movie = new Movie();
-                movie.movieID = rs.getLong("movieid");
-                movie.title = rs.getString("title");
-                movie.year = rs.getInt("year");
-                movie.type = rs.getString("type");
-                return movie;
+                return loadMovie(rs);
             }
         }
         return null;
+    }
+
+
+
+    public static List<Movie> getAll() throws Exception {
+        List<Movie> movies = new ArrayList<>();
+        String sql = "SELECT * FROM movie";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                movies.add(loadMovie(rs));
+            }
+            return movies;
+        }
+        
     }
     
     /**
@@ -47,7 +69,7 @@ public class MovieFactory {
      * @return Eine Liste von Movie-Objekten
      * @throws SQLException
      */
-    public static List<Movie> findByTitle(String title) throws SQLException {
+    public static List<Movie> findByTitle(String title) throws Exception {
         List<Movie> movies = new ArrayList<>();
         String sql = "SELECT movieid, title, year, type FROM movie WHERE title ILIKE ?"; // ILIKE ignoriert klein/großschr. im gegensatz zu LIKE
         try(Connection conn = DBConnection.getConnection();
@@ -57,12 +79,7 @@ public class MovieFactory {
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
-                Movie movie = new Movie();
-                movie.movieID = rs.getLong("movieid");
-                movie.title = rs.getString("title");
-                movie.year = rs.getInt("year");
-                movie.type = rs.getString("type");
-                movies.add(movie);
+                movies.add(loadMovie(rs));
             }
         }
         return movies;
