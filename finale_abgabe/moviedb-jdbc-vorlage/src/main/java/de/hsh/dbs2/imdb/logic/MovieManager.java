@@ -2,7 +2,13 @@ package de.hsh.dbs2.imdb.logic;
 
 import java.util.List;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
+
+import de.hsh.dbs2.imdb.util.DBConnection;;
 
 public class MovieManager {
 
@@ -15,7 +21,17 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public List<MovieDTO> getMovieList(String search) throws Exception {
-		/* TODO */
+		if (search.equals(null) || search.equals("")) {
+			String sql = "SELECT * FROM movie";
+			try (Connection conn = DBConnection.getConnection()) {
+				PreparedStatement pstmt  = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery();
+
+				while (rs.next()) {
+					
+				}
+			}
+		}
 		return null;
 	}
 

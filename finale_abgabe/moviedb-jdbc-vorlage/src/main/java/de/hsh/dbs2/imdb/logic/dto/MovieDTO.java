@@ -15,17 +15,17 @@ import java.util.Set;
  */
 public class MovieDTO {
 
-	private Integer id = null;
+	private Long id = null;
 	private String title = "";
 	private String type = "C";
 	private int year = 0;
 	private Set<String> genres = new HashSet<>();
 	private final List<CharacterDTO> characters = new ArrayList<>();
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTitle() {

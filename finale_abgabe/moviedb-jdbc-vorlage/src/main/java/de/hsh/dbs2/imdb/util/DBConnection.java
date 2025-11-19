@@ -17,7 +17,8 @@ public class DBConnection {
 
 	public static void open() throws SQLException, IOException {
 		Properties props = new Properties();
-		try (FileInputStream fis = new FileInputStream("db.properties")) {
+		String currentPath = new java.io.File(".").getCanonicalPath();
+		try (FileInputStream fis = new FileInputStream(currentPath+"/moviedb-jdbc-vorlage/src/main/java/de/hsh/dbs2/imdb/util/db.properties")) {
 			// Eigenschaften laden
 			props.load(fis);
 
