@@ -67,4 +67,13 @@ public class MovieFactory {
         }
         return movies;
     }
+    public void deleteCharactersByMovieId(long movieId)throws Exception {
+        String sql = "DELETE FROM moviecharacter WHERE movieID = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setLong(1, movieId);
+            pstmt.executeUpdate();
+        }
+    }
 }
