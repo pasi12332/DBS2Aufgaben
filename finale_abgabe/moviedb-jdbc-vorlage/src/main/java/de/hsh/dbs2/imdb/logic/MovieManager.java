@@ -1,10 +1,10 @@
 package de.hsh.dbs2.imdb.logic;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import de.hsh.dbs2.imdb.logic.dto.CharacterDTO;
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
@@ -17,7 +17,6 @@ import de.hsh.dbs2.imdb.Model.MovieCharacter;
 import de.hsh.dbs2.imdb.Model.MovieFactory;
 import de.hsh.dbs2.imdb.Model.MovieGenre;
 import de.hsh.dbs2.imdb.Model.MovieGenreFactory;
-import de.hsh.dbs2.imdb.Model.Person;
 import de.hsh.dbs2.imdb.Model.PersonFactory;
 
 public class MovieManager {
@@ -31,6 +30,24 @@ public class MovieManager {
 		movieDTO.setType(movie.getType());
 		movieDTO.setGenres(genreManager.getGenresByMovie(movie.getMovieId()));
 		return movieDTO;
+	}
+
+	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid) throws Exception {
+		MovieCharacter movieCharacter = new MovieCharacter();
+		movieCharacter.setAlias(character.getAlias());
+		movieCharacter.setCharacter(character.getPlayer());
+		movieCharacter.setPlayerId(personid);
+		movieCharacter.setPosition(0); // Keine Ahnung woher wir die Position bekommen
+		movieCharacter.setMovieId(movieid);
+		movieCharacter.insert();
+	}
+
+
+	public void createMovieGenre(long genreid, long movieid) throws Exception {
+		MovieGenre movieGenre = new MovieGenre();
+		movieGenre.setGenreId(genreid);
+		movieGenre.setMovieId(movieid);
+		movieGenre.insert();
 	}
 
 	/**
@@ -67,33 +84,45 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public void insertUpdateMovie(MovieDTO movieDTO) throws Exception {		
-		Movie movie = MovieFactory.findById(movieDTO.getId());
-		if(movie != null) {
-			movie.setTitle(movieDTO.getTitle());
-			movie.setType(movieDTO.getType());
-			movie.setYear(movieDTO.getYear());
-			for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
-				movieGenre.delete();
+		Connection conn = null;
+		try {
+			conn = DBConnection.getConnection();
+			Movie movie = MovieFactory.findById(movieDTO.getId());
+			if(movie != null) {
+				movie.setTitle(movieDTO.getTitle());
+				movie.setType(movieDTO.getType());
+				movie.setYear(movieDTO.getYear());
+				for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
+					movieGenre.delete();
+				}
+				MovieFactory.deleteCharactersByMovieId(movieDTO.getId());
+				movie.update();
+			} else {
+				movie = new Movie();
+				movie.setTitle(movieDTO.getTitle());
+				movie.setType(movieDTO.getType());
+				movie.setYear(movieDTO.getYear());
+				movie.insert();
 			}
-			MovieFactory.deleteCharactersByMovieId(movieDTO.getId());
 			for(CharacterDTO character : movieDTO.getCharacters()) {
-				long personid = PersonFactory.findByName(character.getPlayer());
-				
+				Long personid = PersonFactory.findByName(character.getPlayer());
+				if(personid == null ) { 
+					throw new Exception("Person exisistiert");
+				}
+				createCharacterMovie(personid, character, movieDTO.getId());
 			}
 			for(String genreS : movieDTO.getGenres()) {
 				Genre genre = GenreFactory.findeByGenre(genreS);
 				if(genre.equals(null)) {
-					// abbruch
-				} else {
-					MovieGenre movieGenre = new MovieGenre();
-					movieGenre.setGenreId(genre.getGenreId());
-					movieGenre.setMovieId(movieDTO.getId());
-					movieGenre.insert();
+					throw new Exception("Genre exisistiert");
 				}
+				createMovieGenre(genre.getGenreId(), movieDTO.getId());
 			}
-
-			movie.update();
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
 		}
+		conn.close();
 	}
 
 	/**
@@ -103,7 +132,18 @@ public class MovieManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public void deleteMovie(int movieId) throws Exception {
-		/* TODO */
+		Connection conn = null;
+		try { 
+			conn = DBConnection.getConnection();
+			Movie movie = MovieFactory.findById(movieId);
+			if (movie == null) {
+				throw new Exception("movie existiert nicht");
+			}
+			movie.delete();
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		}
 	}
 
 	/**
@@ -113,9 +153,26 @@ public class MovieManager {
 	 * @return MovieDTO-Objekt mit allen Informationen zu dem Film
 	 * @throws Exception Z.B. bei Datenbank-Fehlern oder falls der Movie nicht existiert.
 	 */
-	public MovieDTO getMovie(int movieId) throws Exception {
-		/* TODO */
-		return null;
+	public MovieDTO getMovie(Long movieId) throws Exception {
+		MovieDTO movieDTO = new MovieDTO();
+		Movie movie = MovieFactory.findById(movieId);
+		Set<String> genres = new HashSet<>(); 
+		List<CharacterDTO> characterDTOs = new ArrayList<>();
+		GenreManager genreManager = new GenreManager();
+		if(movie == null) { return null; }
+		genres = genreManager.getGenresByMovie(movieId);
+		for (MovieCharacter movieCharacter : MovieFactory.getCharacterByMovieId(movieId)) {
+			CharacterDTO characterDTO = new CharacterDTO();
+			characterDTO.setAlias(movieCharacter.getAlias());
+			characterDTO.setCharacter(movieCharacter.getCharacter());
+			characterDTO.setPlayer(PersonFactory.getNameByID(movieCharacter.getPlayerId()));
+			movieDTO.addCharacter(characterDTO);
+		}
+		movieDTO.setGenres(genres);
+		movieDTO.setTitle(movie.getTitle());
+		movieDTO.setType(movie.getType());
+		movieDTO.setYear(movie.getYear());
+		return movieDTO;
 	}
 	
 }

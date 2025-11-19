@@ -19,6 +19,9 @@ public class MovieCharacter {
     String character;
     String alias;
     int position;
+
+    public MovieCharacter() { }
+    public MovieCharacter(Long movCharID) { this.movCharID = movCharID; }
     
     /**
      * Fügt einen neuen Movie-Character in die Datenbank ein.
