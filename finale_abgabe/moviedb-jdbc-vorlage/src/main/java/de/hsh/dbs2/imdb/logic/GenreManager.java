@@ -1,7 +1,11 @@
 package de.hsh.dbs2.imdb.logic;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+    
+import de.hsh.dbs2.imdb.Model.Genre;
+import de.hsh.dbs2.imdb.Model.GenreFactory;
 
 public class GenreManager {
 
@@ -12,13 +16,43 @@ public class GenreManager {
 	 * @throws Exception error describing e.g. the database problem
 	 */
 	public List<String> getGenres() throws Exception {
-		/* TODO */
-		return null;
+		List<String> result = new ArrayList<>();
+		
+		try {
+			
+			List<Genre> genres = GenreFactory.getAll(); // Alle Genres über die Factory laden
+			
+			for (Genre g : genres) {  
+				result.add(g.getGenre()); // Nur die Namen (Strings) in die Ergebnisliste packen
+			}
+			
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return result;
 	}
-
+	/**
+	 * Ermittelt alle Genres, die einem bestimmten Film zugeordnet sind.
+	 * @param movieID Die ID des Films, für den die Genres gesucht werden
+	 * @return Ein HashSet mit den Namen der Genres
+	 * @throws Exception
+	 */
 	public HashSet<String> getGenresByMovie(Long movieID) throws Exception {
-		return null;
+		HashSet<String> result = new HashSet<>();
+
+    	try {
+        
+        	List<Genre> genres = GenreFactory.findByMovie(movieID); // Holt die Genre-Objekte passend zur MovieID aus der Factory
+
+        	for (Genre g : genres) {
+            result.add(g.getGenre()); // Wandelt die Objekte in Strings um und packt sie ins HashSet
+        	}
+
+    	} catch (Exception e) {
+        	throw e;
+    	}
+
+    	return result;
 	}
-
-
 }
