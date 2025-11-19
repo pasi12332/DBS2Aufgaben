@@ -35,7 +35,20 @@ public class MovieGenre {
                 if(affectedRows == 0) {
                     throw new SQLException("Erstellen von MovieGenre fehlgeschlagen, keine Zeilen geändert.");
                 }
-        }
+            }
+    }
+    public void delete(long genreID) throws Exception {
+        String sql= "DELETE FROM moviegenre WHERE movieID ? AND genreID = ?";
+        try( Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setLong(1, this.movieID);
+                pstmt.setLong(2,this.genreID);
+                int affectedRows = pstmt.executeUpdate();
+
+                if (affectedRows == 0) {
+                    throw new SQLException("Löschen der MovieGenre Zuordnung fehlgeschlagen, keine Zeilen geändert.");
+                }
+            }
     }
 
     /**
