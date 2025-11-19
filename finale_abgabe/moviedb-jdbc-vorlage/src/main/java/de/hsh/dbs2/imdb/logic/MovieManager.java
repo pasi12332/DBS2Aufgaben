@@ -13,6 +13,8 @@ import de.hsh.dbs2.imdb.Model.Genre;
 import de.hsh.dbs2.imdb.Model.GenreFactory;
 import de.hsh.dbs2.imdb.Model.Movie;
 import de.hsh.dbs2.imdb.Model.MovieFactory;
+import de.hsh.dbs2.imdb.Model.MovieGenre;
+import de.hsh.dbs2.imdb.Model.MovieGenreFactory;
 
 public class MovieManager {
 
@@ -66,10 +68,11 @@ public class MovieManager {
 			movie.setTitle(movieDTO.getTitle());
 			movie.setType(movieDTO.getType());
 			movie.setYear(movieDTO.getYear());
-			for(Genre genre : GenreFactory.findByMovie(movie.getMovieId())) {
-				if(!movieDTO.getGenres().contains(genre.getGenre())){
-					
-				}
+			for(MovieGenre genre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
+				
+			}
+			for(String genreS : movieDTO.getGenres()) {
+				
 			}
 			movie.update();
 		}

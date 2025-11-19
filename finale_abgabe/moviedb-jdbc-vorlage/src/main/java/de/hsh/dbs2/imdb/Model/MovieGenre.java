@@ -16,6 +16,11 @@ public class MovieGenre {
     Long genreID;
     Long movieID;
 
+
+    public MovieGenre() { }
+    public MovieGenre(long movieGenreID) { this.movieGenreID = movieGenreID; }
+
+
     /**
      * Fügt eine neue Movie-Genre Zuordnung in die Datenbank ein.
      * Da der Primärschlüssel aus den Fremdschlüsseln besteht, ist keine ID-Generierung erforderlich.
