@@ -32,10 +32,9 @@ public class MovieFactory {
      * @return Ein Movie-Objekt oder null, wenn kein Film gefunden wurde
      * @throws SQLException
      */
-    public static Movie findById(long id) throws Exception {
+    public static Movie findById(long id, Connection conn) throws Exception {
         String sql = "SELECT * FROM movie WHERE movieid = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setLong(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -49,11 +48,10 @@ public class MovieFactory {
 
 
 
-    public static List<Movie> getAll() throws Exception {
+    public static List<Movie> getAll(Connection conn) throws Exception {
         List<Movie> movies = new ArrayList<>();
         String sql = "SELECT * FROM movie";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 movies.add(loadMovie(rs));
@@ -69,11 +67,10 @@ public class MovieFactory {
      * @return Eine Liste von Movie-Objekten
      * @throws SQLException
      */
-    public static List<Movie> findByTitle(String title) throws Exception {
+    public static List<Movie> findByTitle(String title, Connection conn) throws Exception {
         List<Movie> movies = new ArrayList<>();
         String sql = "SELECT movieid, title, year, type FROM movie WHERE title ILIKE ?"; // ILIKE ignoriert klein/großschr. im gegensatz zu LIKE
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, "%" + title + "%");
             ResultSet rs = pstmt.executeQuery();
@@ -86,10 +83,9 @@ public class MovieFactory {
     }
 
 
-    public static void deleteCharactersByMovieId(long movieId) throws Exception {
+    public static void deleteCharactersByMovieId(long movieId, Connection conn) throws Exception {
         String sql = "DELETE FROM moviecharacter WHERE movieID = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setLong(1, movieId);
             pstmt.executeUpdate();
@@ -97,11 +93,10 @@ public class MovieFactory {
     }
 
 
-    public static List<MovieCharacter> getCharacterByMovieId(long movieid) throws Exception {
+    public static List<MovieCharacter> getCharacterByMovieId(long movieid, Connection conn) throws Exception {
         List<MovieCharacter> chracters = new ArrayList<>();
         String sql = "SELECT * FROM MovieCharacter WHERE movieid = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setLong(1, movieid);
             ResultSet rs = pstmt.executeQuery();

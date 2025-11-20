@@ -25,10 +25,9 @@ public class Genre {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void insert() throws SQLException {
+    public void insert(Connection conn) throws SQLException {
         String sql = "INSERT INTO genre (genre) Values (?)";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
                 pstmt.setString(1, genre);
 

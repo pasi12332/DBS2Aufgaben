@@ -1,8 +1,10 @@
 package de.hsh.dbs2.imdb.logic;
 
+import java.sql.Connection;
 import java.util.List;
 
 import de.hsh.dbs2.imdb.Model.PersonFactory;
+import de.hsh.dbs2.imdb.util.DBConnection;
 
 public class PersonManager {
 	/**
@@ -12,7 +14,16 @@ public class PersonManager {
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
 	public List<String> getPersonList(String name) throws Exception {
-		return PersonFactory.getPersonListByName(name);
+		Connection conn = null;
+		try {
+			conn = DBConnection.getConnection();
+			return PersonFactory.getPersonListByName(name, conn);
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			conn.close();
+		}
+		return null;
 				
 	}
 				
@@ -23,7 +34,16 @@ public class PersonManager {
 	 * @return ID der Person
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
-	public int getPerson(String name) throws Exception {
-		return  (int) PersonFactory.findByName(name);
+	public Long getPerson(String name) throws Exception {
+		Connection conn = null;
+		try {
+			conn = DBConnection.getConnection();
+			return PersonFactory.findByName(name, conn);
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			conn.close();
+		}
+		return null;
 	}
 }

@@ -32,22 +32,22 @@ public class MovieManager {
 		return movieDTO;
 	}
 
-	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid) throws Exception {
+	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid, Connection conn) throws Exception {
 		MovieCharacter movieCharacter = new MovieCharacter();
 		movieCharacter.setAlias(character.getAlias());
 		movieCharacter.setCharacter(character.getPlayer());
 		movieCharacter.setPlayerId(personid);
 		movieCharacter.setPosition(0); // Keine Ahnung woher wir die Position bekommen
 		movieCharacter.setMovieId(movieid);
-		movieCharacter.insert();
+		movieCharacter.insert(conn);
 	}
 
 
-	public void createMovieGenre(long genreid, long movieid) throws Exception {
+	public void createMovieGenre(long genreid, long movieid, Connection conn) throws Exception {
 		MovieGenre movieGenre = new MovieGenre();
 		movieGenre.setGenreId(genreid);
 		movieGenre.setMovieId(movieid);
-		movieGenre.insert();
+		movieGenre.insert(conn);
 	}
 
 	/**
@@ -60,17 +60,23 @@ public class MovieManager {
 	 */
 	public List<MovieDTO> getMovieList(String search) throws Exception {
 		List<MovieDTO> movieListDOT = new ArrayList<>();
-
-		if (search.equals(null) || search.equals("")) {
-			for (Movie movie : MovieFactory.getAll()) {
-				movieListDOT.add(loadMovieDTO(movie));
+		Connection conn = null;
+		try {
+			conn = DBConnection.getConnection();
+			if (search.equals(null) || search.equals("")) {
+				for (Movie movie : MovieFactory.getAll(conn)) {
+					movieListDOT.add(loadMovieDTO(movie));
+				}
+			} else {
+				for (Movie movie : MovieFactory.findByTitle(search, conn)) {
+					movieListDOT.add(loadMovieDTO(movie));
+				}	
 			}
-		} else {
-			for (Movie movie : MovieFactory.findByTitle(search)) {
-				movieListDOT.add(loadMovieDTO(movie));
-			}	
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			conn.close();
 		}
-		
 		return movieListDOT;
 	}
 
@@ -87,33 +93,33 @@ public class MovieManager {
 		Connection conn = null;
 		try {
 			conn = DBConnection.getConnection();
-			Movie movie = MovieFactory.findById(movieDTO.getId());
+			Movie movie = MovieFactory.findById(movieDTO.getId(), conn);
 			if(movie != null) {
 				movie.setTitle(movieDTO.getTitle());
 				movie.setType(movieDTO.getType());
 				movie.setYear(movieDTO.getYear());
-				for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId())) {
-					movieGenre.delete();
+				for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(movieDTO.getId(), conn)) {
+					movieGenre.delete(conn);
 				}
-				MovieFactory.deleteCharactersByMovieId(movieDTO.getId());
-				movie.update();
+				MovieFactory.deleteCharactersByMovieId(movieDTO.getId(), conn);
+				movie.update(conn);
 			} else {
 				movie = new Movie();
 				movie.setTitle(movieDTO.getTitle());
 				movie.setType(movieDTO.getType());
 				movie.setYear(movieDTO.getYear());
-				movie.insert();
+				movie.insert(conn);
 			}
 			for(CharacterDTO character : movieDTO.getCharacters()) {
-				Long personid = PersonFactory.findByName(character.getPlayer());
-				createCharacterMovie(personid, character, movieDTO.getId());
+				Long personid = PersonFactory.findByName(character.getPlayer(), conn);
+				createCharacterMovie(personid, character, movieDTO.getId(), conn);
 			}
 			for(String genreS : movieDTO.getGenres()) {
-				Genre genre = GenreFactory.findeByGenre(genreS);
+				Genre genre = GenreFactory.findeByGenre(genreS, conn);
 				if(genre.equals(null)) {
 					throw new Exception("Genre exisistiert");
 				}
-				createMovieGenre(genre.getGenreId(), movieDTO.getId());
+				createMovieGenre(genre.getGenreId(), movieDTO.getId(), conn);
 			}
 			conn.commit();
 		} catch (Exception e) {
@@ -134,11 +140,11 @@ public class MovieManager {
 		Connection conn = null;
 		try { 
 			conn = DBConnection.getConnection();
-			Movie movie = MovieFactory.findById(movieId);
+			Movie movie = MovieFactory.findById(movieId, conn);
 			if (movie == null) {
 				throw new Exception("movie existiert nicht");
 			}
-			movie.delete();
+			movie.delete(conn);
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
@@ -155,24 +161,32 @@ public class MovieManager {
 	 * @throws Exception Z.B. bei Datenbank-Fehlern oder falls der Movie nicht existiert.
 	 */
 	public MovieDTO getMovie(Long movieId) throws Exception {
+		Connection conn = null;
 		MovieDTO movieDTO = new MovieDTO();
-		Movie movie = MovieFactory.findById(movieId);
-		Set<String> genres = new HashSet<>(); 
-		List<CharacterDTO> characterDTOs = new ArrayList<>();
-		GenreManager genreManager = new GenreManager();
-		if(movie == null) { return null; }
-		genres = genreManager.getGenresByMovie(movieId);
-		for (MovieCharacter movieCharacter : MovieFactory.getCharacterByMovieId(movieId)) {
-			CharacterDTO characterDTO = new CharacterDTO();
-			characterDTO.setAlias(movieCharacter.getAlias());
-			characterDTO.setCharacter(movieCharacter.getCharacter());
-			characterDTO.setPlayer(PersonFactory.getNameByID(movieCharacter.getPlayerId()));
-			movieDTO.addCharacter(characterDTO);
+		try { 
+			conn = DBConnection.getConnection();
+			
+			Movie movie = MovieFactory.findById(movieId, conn);
+			Set<String> genres = new HashSet<>(); 
+			GenreManager genreManager = new GenreManager();
+			if(movie == null) { return null; }
+			genres = genreManager.getGenresByMovie(movieId);
+			for (MovieCharacter movieCharacter : MovieFactory.getCharacterByMovieId(movieId, conn)) {
+				CharacterDTO characterDTO = new CharacterDTO();
+				characterDTO.setAlias(movieCharacter.getAlias());
+				characterDTO.setCharacter(movieCharacter.getCharacter());
+				characterDTO.setPlayer(PersonFactory.getNameByID(movieCharacter.getPlayerId(), conn));
+				movieDTO.addCharacter(characterDTO);
+			}
+			movieDTO.setGenres(genres);
+			movieDTO.setTitle(movie.getTitle());
+			movieDTO.setType(movie.getType());
+			movieDTO.setYear(movie.getYear());
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			conn.close();
 		}
-		movieDTO.setGenres(genres);
-		movieDTO.setTitle(movie.getTitle());
-		movieDTO.setType(movie.getType());
-		movieDTO.setYear(movie.getYear());
 		return movieDTO;
 	}
 	

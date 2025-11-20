@@ -17,15 +17,14 @@ public class GenreFactory {
     }
     
 
-    public static List<Genre> findByMovie(long movieID) throws Exception {
+    public static List<Genre> findByMovie(long movieID, Connection conn) throws Exception {
         List<Genre> genres = new ArrayList<>();
         String sql = "SELECT * FROM MovieGenre WHERE movieid = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, movieID);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                genres.add(findeByID(rs.getLong("genreid")));
+                genres.add(findeByID(rs.getLong("genreid"), conn));
             }
             
         } catch (Exception e) {
@@ -35,10 +34,9 @@ public class GenreFactory {
     }
 
 
-    public static Genre findeByID(long genreID) throws Exception {
+    public static Genre findeByID(long genreID, Connection conn) throws Exception {
         String sql = "SELECT * FROM genre WHERE genreid = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, genreID);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -48,24 +46,22 @@ public class GenreFactory {
         }
     }
 
-    public static Genre findeByGenre(String genreS) throws Exception {
+    public static Genre findeByGenre(String genreS, Connection conn) throws Exception {
         String sql = "SELECT * FROM genre WHERE genre = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, genreS);
-                ResultSet rs = pstmt.executeQuery();
-                if (rs.next()) {
-                    return loadGenre(rs);
-                }
-                return null;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, genreS);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return loadGenre(rs);
             }
+            return null;
+        }
     }
 
-    public static List<Genre> getAll() throws Exception {
+    public static List<Genre> getAll(Connection conn) throws Exception {
         List<Genre> genres = new ArrayList<>();
         String sql = "SELECT * FROM genre ORDER BY genre ASC";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 genres.add(loadGenre(rs));

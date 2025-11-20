@@ -29,10 +29,9 @@ public class MovieCharacter {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void insert() throws SQLException {
+    public void insert(Connection conn) throws SQLException {
         String sql = "INSERT INTO moviecharacter (movieid, personid, character, alias, position) Values (?, ?, ?, ?, ?)";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
                 pstmt.setLong(1, this.movieID);
                 pstmt.setLong(2, personID);

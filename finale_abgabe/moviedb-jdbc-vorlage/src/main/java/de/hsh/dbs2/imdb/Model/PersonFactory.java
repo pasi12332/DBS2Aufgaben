@@ -23,10 +23,9 @@ public class PersonFactory {
 	 * @throws SQLException if a database access error occurs
 	 * @throws DoesNotExistException if no person with the given name exists
 	 */
-	public static long findByName(String name) throws SQLException, DoesNotExistException {
+	public static long findByName(String name, Connection conn) throws SQLException, DoesNotExistException {
 		String sql = "SELECT personID FROM person WHERE name = ?";
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, name);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
@@ -39,10 +38,9 @@ public class PersonFactory {
 	}
 
 
-	public static String getNameByID(Long playerID) throws Exception {
+	public static String getNameByID(Long playerID, Connection conn) throws Exception {
 		String sql = "SELECT * FROM person WHERE personID = ?";
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, playerID);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
@@ -61,11 +59,10 @@ public class PersonFactory {
 	 * @return a list of matching person names
 	 * @throws Exception if a database access error occurs
 	 */
-	public static List<String> getPersonListByName(String name) throws Exception {
+	public static List<String> getPersonListByName(String name, Connection conn) throws Exception {
 		String sql = "SELECT name FROM person WHERE name ILIKE ?";
 		List<String> resultList = new ArrayList<>();
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, "%" + name + "%");
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {

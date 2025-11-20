@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 public class MovieGenreFactory {
     private static MovieGenre loadMovieGenre(ResultSet rs) throws Exception {
@@ -15,11 +14,10 @@ public class MovieGenreFactory {
         movieGenre.setMovieId(rs.getLong("movieid"));
         return movieGenre;
     }
-    public static List<MovieGenre> findByMovie(long movieID) throws Exception {
+    public static List<MovieGenre> findByMovie(long movieID, Connection conn) throws Exception {
         List<MovieGenre> movieGenres = new ArrayList<>();
         String sql = "SELECT * FROM moviegenre WHERE movieid = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, movieID);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {

@@ -1,11 +1,13 @@
 package de.hsh.dbs2.imdb.logic;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
     
 import de.hsh.dbs2.imdb.Model.Genre;
 import de.hsh.dbs2.imdb.Model.GenreFactory;
+import de.hsh.dbs2.imdb.util.DBConnection;
 
 public class GenreManager {
 
@@ -18,9 +20,12 @@ public class GenreManager {
 	public List<String> getGenres() throws Exception {
 		List<String> result = new ArrayList<>();
 		
+		Connection conn = null;
+		
 		try {
+			conn = DBConnection.getConnection();
 			
-			List<Genre> genres = GenreFactory.getAll(); // Alle Genres über die Factory laden
+			List<Genre> genres = GenreFactory.getAll(conn); // Alle Genres über die Factory laden
 			
 			for (Genre g : genres) {  
 				result.add(g.getGenre()); // Nur die Namen (Strings) in die Ergebnisliste packen
@@ -28,7 +33,10 @@ public class GenreManager {
 			return result;
 			
 		} catch (Exception e) {
+			conn.rollback();
 			throw e;
+		} finally {
+			conn.close();
 		}
 		
 		
@@ -41,10 +49,12 @@ public class GenreManager {
 	 */
 	public HashSet<String> getGenresByMovie(Long movieID) throws Exception {
 		HashSet<String> result = new HashSet<>();
-
-    	try {
+		Connection conn = null;
+		
+		try {
+			conn = DBConnection.getConnection();
         
-        	List<Genre> genres = GenreFactory.findByMovie(movieID); // Holt die Genre-Objekte passend zur MovieID aus der Factory
+        	List<Genre> genres = GenreFactory.findByMovie(movieID, conn); // Holt die Genre-Objekte passend zur MovieID aus der Factory
 
         	for (Genre g : genres) {
             result.add(g.getGenre()); // Wandelt die Objekte in Strings um und packt sie ins HashSet
@@ -52,8 +62,11 @@ public class GenreManager {
 			return result;
 
     	} catch (Exception e) {
+			conn.rollback();
         	throw e;
-    	}
+    	} finally {
+			conn.close();
+		}
 
     	
 	}

@@ -27,10 +27,9 @@ public class MovieGenre {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void insert() throws SQLException {
+    public void insert(Connection conn) throws SQLException {
         String sql = "INSERT INTO moviegenre (genreid, movieid) Values (?, ?)";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                 pstmt.setLong(1, this.genreID);
                 pstmt.setLong(2, this.movieID);
@@ -42,10 +41,9 @@ public class MovieGenre {
                 }
             }
     }
-    public void delete() throws Exception {
+    public void delete(Connection conn) throws Exception {
         String sql= "DELETE FROM moviegenre WHERE movieID ? AND genreID = ?";
-        try( Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setLong(1, this.movieID);
                 pstmt.setLong(2,this.genreID);
                 int affectedRows = pstmt.executeUpdate();

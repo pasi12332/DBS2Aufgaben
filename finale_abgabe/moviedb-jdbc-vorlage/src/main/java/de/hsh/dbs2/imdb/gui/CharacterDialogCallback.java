@@ -26,15 +26,15 @@ public class CharacterDialogCallback {
 		}
 	}
 	
-	public int getPerson(String text) {
+	public Long getPerson(String text) {
 		try {
             return pm.getPerson(text);
 		} catch (DoesNotExistException e) {
 			JOptionPane.showMessageDialog(owner, "Eine Person mit dem Namen " + text + " wurde nicht gefunden"); 
-			return -1;
+			return null;
 		} catch (Exception e) {
 			new ShowErrorDialog(owner, "Fehler bei der Personensuche", e);
-			return -1;
+			return null;
 		}
 	}
 }

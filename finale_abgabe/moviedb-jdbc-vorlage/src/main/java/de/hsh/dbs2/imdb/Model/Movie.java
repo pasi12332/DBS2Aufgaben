@@ -36,28 +36,27 @@ public class Movie {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void insert() throws SQLException {
+    public void insert(Connection conn) throws SQLException {
         String sql = "INSERT INTO movie (title, year, type) Values (?, ?, ?)";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-                pstmt.setString(1, this.title);
-                pstmt.setInt(2, this.year);
-                pstmt.setString(3, this.type);
+            pstmt.setString(1, this.title);
+            pstmt.setInt(2, this.year);
+            pstmt.setString(3, this.type);
 
-                int affectedRows = pstmt.executeUpdate();
+            int affectedRows = pstmt.executeUpdate();
 
-                if(affectedRows == 0) {
-                    throw new SQLException("Erstellen von Movie fehlgeschlagen, keine Zeilen geändert.");
+            if(affectedRows == 0) {
+                throw new SQLException("Erstellen von Movie fehlgeschlagen, keine Zeilen geändert.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    this.movieID = generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Erstellen von Movie fehlgeschlagen, keine ID erhalten.");
                 }
-
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        this.movieID = generatedKeys.getLong(1);
-                    } else {
-                        throw new SQLException("Erstellen von Movie fehlgeschlagen, keine ID erhalten.");
-                    }
-                }
+            }
         }
     }
 
@@ -67,20 +66,19 @@ public class Movie {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void update() throws SQLException {
+    public void update(Connection conn) throws SQLException {
         String sql = "UPDATE movie SET title = ?, year = ?, type = ? WHERE movieid = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 
-                pstmt.setString(1, this.title);
-                pstmt.setInt(2, this.year);
-                pstmt.setString(3, this.type);
-                pstmt.setLong(4, this.movieID);
+            pstmt.setString(1, this.title);
+            pstmt.setInt(2, this.year);
+            pstmt.setString(3, this.type);
+            pstmt.setLong(4, this.movieID);
 
-                int affectedRows = pstmt.executeUpdate();
-                if(affectedRows == 0) {
-                    throw new SQLException("Aktualisieren von Movie fehlgeschlagen, keine Zeilen geändert.");
-                }
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows == 0) {
+                throw new SQLException("Aktualisieren von Movie fehlgeschlagen, keine Zeilen geändert.");
+            }
         }
     }
 
@@ -90,17 +88,16 @@ public class Movie {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void delete() throws SQLException {
+    public void delete(Connection conn) throws SQLException {
         String sql = "DELETE FROM movie WHERE movieid = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 
-                pstmt.setLong(1, this.movieID);
+            pstmt.setLong(1, this.movieID);
 
-                int affectedRows = pstmt.executeUpdate();
-                if(affectedRows == 0) {
-                    throw new SQLException("Löschen von Movie fehlgeschlagen, keine Zeilen geändert.");
-                }
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows == 0) {
+                throw new SQLException("Löschen von Movie fehlgeschlagen, keine Zeilen geändert.");
+            }
         }
     }
 
