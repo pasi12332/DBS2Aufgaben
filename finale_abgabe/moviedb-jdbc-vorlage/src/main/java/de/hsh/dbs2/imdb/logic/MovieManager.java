@@ -32,12 +32,12 @@ public class MovieManager {
 		return movieDTO;
 	}
 
-	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid, Connection conn) throws Exception {
+	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid, int position, Connection conn) throws Exception {
 		MovieCharacter movieCharacter = new MovieCharacter();
 		movieCharacter.setAlias(character.getAlias());
 		movieCharacter.setCharacter(character.getPlayer());
 		movieCharacter.setPlayerId(personid);
-		movieCharacter.setPosition(0); // Keine Ahnung woher wir die Position bekommen
+		movieCharacter.setPosition(position);
 		movieCharacter.setMovieId(movieid);
 		movieCharacter.insert(conn);
 	}
@@ -109,10 +109,13 @@ public class MovieManager {
 				movie.setYear(movieDTO.getYear());
 				movie.insert(conn);
 			}
+			int position = 1;
 			for(CharacterDTO character : movieDTO.getCharacters()) {
 				Long personid = PersonFactory.findByName(character.getPlayer(), conn);
-				createCharacterMovie(personid, character, movieDTO.getId(), conn);
+				createCharacterMovie(personid, character, movieDTO.getId(), position, conn);
+				position++;
 			}
+			
 			for(String genreS : movieDTO.getGenres()) {
 				Genre genre = GenreFactory.findeByGenre(genreS, conn);
 				if(genre.equals(null)) {

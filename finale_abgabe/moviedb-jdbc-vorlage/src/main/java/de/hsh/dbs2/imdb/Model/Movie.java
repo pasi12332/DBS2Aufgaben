@@ -5,12 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import de.hsh.dbs2.imdb.logic.GenreManager;
-import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 /**
  * ActiveRecord-Klasse für Movie-Entität.
@@ -89,11 +83,14 @@ public class Movie {
      * 
      * @throws SQLException wenn ein Datenbankfehler auftritt
      */
-    public void delete(Connection conn) throws SQLException {
+    public void delete(Connection conn) throws Exception {
         String sql = "DELETE FROM movie WHERE movieid = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, this.movieID);
-
+            for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(this.movieID, conn)) {
+                movieGenre.delete(conn);
+            }
+            MovieFactory.deleteCharactersByMovieId(this.movieID, conn);
             int affectedRows = pstmt.executeUpdate();
             if(affectedRows == 0) {
                 throw new SQLException("Löschen von Movie fehlgeschlagen, keine Zeilen geändert.");

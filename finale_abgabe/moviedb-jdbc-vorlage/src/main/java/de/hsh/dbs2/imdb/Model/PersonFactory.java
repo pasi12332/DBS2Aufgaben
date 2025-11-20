@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hsh.dbs2.imdb.persistence.DoesNotExistException;
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 /**
  * Factory class for person-related database operations.

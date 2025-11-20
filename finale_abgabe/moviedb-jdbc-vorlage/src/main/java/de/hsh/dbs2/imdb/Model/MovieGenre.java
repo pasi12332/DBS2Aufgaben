@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 /**
  * ActiveRecord-Klasse für MovieGenre-Entität.

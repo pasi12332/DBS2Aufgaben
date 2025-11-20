@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 /**
  * Factory-Klasse für Movie-Entitäten.
