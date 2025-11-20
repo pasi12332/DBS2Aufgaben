@@ -62,12 +62,6 @@ public class MovieManager {
 		List<MovieDTO> movieListDOT = new ArrayList<>();
 		Connection conn = null;
 		try {
-            DBConnection.open();
-        } catch (Exception e) {
-            e.printStackTrace();
-			System.exit(1);
-        }
-		try {
 			conn = DBConnection.getConnection();
 			if (search.equals(null) || search.equals("")) {
 				for (Movie movie : MovieFactory.getAll(conn)) {
@@ -80,8 +74,6 @@ public class MovieManager {
 			}
 		} catch (Exception e) {
 			conn.rollback();
-		} finally {
-			conn.close();
 		}
 		return movieListDOT;
 	}
@@ -130,8 +122,6 @@ public class MovieManager {
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
-		} finally {
-			conn.close();
 		}
 		
 	}
@@ -154,8 +144,6 @@ public class MovieManager {
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
-		} finally {
-			conn.close();
 		}
 	}
 
@@ -190,8 +178,6 @@ public class MovieManager {
 			movieDTO.setYear(movie.getYear());
 		} catch (Exception e) {
 			conn.rollback();
-		} finally {
-			conn.close();
 		}
 		return movieDTO;
 	}
