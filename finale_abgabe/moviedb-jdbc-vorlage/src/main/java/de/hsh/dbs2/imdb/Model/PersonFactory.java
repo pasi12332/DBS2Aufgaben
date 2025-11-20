@@ -37,6 +37,20 @@ public class PersonFactory {
 	}
 
 
+	/**
+	 * Gibt den Namen einer Person anhand ihrer ID zurück.
+	 *
+	 * Diese Methode führt eine SQL-Abfrage auf der Tabelle {@code person} aus und sucht nach einem Eintrag
+	 * mit der angegebenen {@code playerID}. Wird ein entsprechender Datensatz gefunden, wird der Wert aus
+	 * der Spalte {@code name} zurückgegeben. Existiert kein Eintrag mit dieser ID, wird eine
+	 * {@link DoesNotExistException} ausgelöst.
+	 *
+	 * @param playerID Die ID der gesuchten Person.
+	 * @param conn     Eine gültige Datenbankverbindung, über die die Abfrage ausgeführt wird.
+	 * @return Der Name der Person mit der angegebenen ID.
+	 * @throws DoesNotExistException Wenn keine Person mit der übergebenen ID existiert.
+	 * @throws Exception Wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
+	 */
 	public static String getNameByID(Long playerID, Connection conn) throws Exception {
 		String sql = "SELECT * FROM person WHERE personID = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

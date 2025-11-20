@@ -40,6 +40,19 @@ public class MovieGenre {
                 }
             }
     }
+
+
+    /**
+     * Löscht die Zuordnung zwischen einem Film und einem Genre aus der Tabelle {@code moviegenre}.
+     *
+     * Diese Methode entfernt den Datensatz, dessen {@code movieID} und {@code genreID} den Werten
+     * des aktuellen {@link MovieGenre}-Objekts entsprechen. Wird kein Datensatz gelöscht, wird
+     * eine {@link SQLException} ausgelöst, da dies darauf hinweist, dass die Zuordnung nicht existiert.
+     *
+     * @param conn Eine gültige Datenbankverbindung zum Ausführen der Löschoperation.
+     * @throws SQLException Wenn keine Zeilen gelöscht wurden oder ein Fehler beim Ausführen des SQL-Befehls auftritt.
+     * @throws Exception Wenn ein anderer unerwarteter Fehler auftritt.
+     */
     public void delete(Connection conn) throws Exception {
         String sql= "DELETE FROM moviegenre WHERE movieID = ? AND genreID = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {

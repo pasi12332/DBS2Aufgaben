@@ -20,8 +20,8 @@ public class PersonManager {
 			return PersonFactory.getPersonListByName(name, conn);
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		}
-		return null;
 				
 	}
 				
@@ -39,7 +39,7 @@ public class PersonManager {
 			return PersonFactory.findByName(name, conn);
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		}
-		return null;
 	}
 }

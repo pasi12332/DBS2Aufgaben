@@ -21,6 +21,18 @@ import de.hsh.dbs2.imdb.Model.PersonFactory;
 
 public class MovieManager {
 
+	/**
+	 * Erzeugt ein {@link MovieDTO}-Objekt aus einem gegebenen {@link Movie}-Objekt.
+	 *
+	 * Diese Methode überträgt die grundlegenden Filmdaten (ID, Titel, Jahr, Typ)
+	 * und lädt zusätzlich alle zugehörigen Genres über den {@link GenreManager}.
+	 * Das Ergebnis ist ein vollständig befülltes {@link MovieDTO}-Objekt, das sich
+	 * z. B. für API-Ausgaben oder UI-Darstellungen eignet.
+	 *
+	 * @param movie Das Filmobjekt, dessen Daten in ein DTO übertragen werden sollen.
+	 * @return Ein vollständig befülltes {@link MovieDTO}.
+	 * @throws Exception Wenn beim Laden der Genres ein Fehler auftritt.
+	 */
 	public MovieDTO loadMovieDTO(Movie movie) throws Exception {
 		MovieDTO movieDTO = new MovieDTO();
 		GenreManager genreManager = new GenreManager();
@@ -32,6 +44,20 @@ public class MovieManager {
 		return movieDTO;
 	}
 
+	/**
+	 * Erstellt eine neue Charakter-Film-Zuordnung in der Datenbank.
+	 *
+	 * Diese Methode legt einen neuen {@link MovieCharacter}-Eintrag an, der definiert,
+	 * welche Person (Player) welchen Charakter in welchem Film spielt und an welcher
+	 * Position (Reihenfolge/Stellenwert) dieser Charakter aufgeführt wird.
+	 *
+	 * @param personid  Die ID der Person, die den Charakter spielt.
+	 * @param character Das DTO mit Charakterdaten (Alias und Name).
+	 * @param movieid   Die ID des Films, zu dem der Charakter gehört.
+	 * @param position  Die Reihenfolge, in der der Charakter gelistet wird.
+	 * @param conn      Eine gültige Datenbankverbindung.
+	 * @throws Exception Wenn das Einfügen in die Datenbank fehlschlägt.
+	 */
 	public void createCharacterMovie(Long personid, CharacterDTO character, Long movieid, int position, Connection conn) throws Exception {
 		MovieCharacter movieCharacter = new MovieCharacter();
 		movieCharacter.setAlias(character.getAlias());
@@ -42,7 +68,17 @@ public class MovieManager {
 		movieCharacter.insert(conn);
 	}
 
-
+	/**
+	 * Erstellt eine neue Genre-Film-Zuordnung in der Datenbank.
+	 *
+	 * Diese Methode fügt einen neuen Datensatz in der Tabelle {@code moviegenre} ein,
+	 * der ein Genre eindeutig einem Film zuordnet.
+	 *
+	 * @param genreid Die ID des Genres.
+	 * @param movieid Die ID des Films.
+	 * @param conn    Eine gültige Datenbankverbindung zum Ausführen der Insert-Operation.
+	 * @throws Exception Wenn das Einfügen in die Datenbank fehlschlägt.
+	 */
 	public void createMovieGenre(long genreid, long movieid, Connection conn) throws Exception {
 		MovieGenre movieGenre = new MovieGenre();
 		movieGenre.setGenreId(genreid);
@@ -63,7 +99,7 @@ public class MovieManager {
 		Connection conn = null;
 		try {
 			conn = DBConnection.getConnection();
-			if (search.equals(null) || search.equals("")) {
+			if (search == null || search.isEmpty()) {
 				for (Movie movie : MovieFactory.getAll(conn)) {
 					movieListDOT.add(loadMovieDTO(movie));
 				}
@@ -74,6 +110,7 @@ public class MovieManager {
 			}
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		}
 		return movieListDOT;
 	}
@@ -119,15 +156,15 @@ public class MovieManager {
 			
 			for(String genreS : movieDTO.getGenres()) {
 				Genre genre = GenreFactory.findeByGenre(genreS, conn);
-				if(genre.equals(null)) {
-					throw new Exception("Genre exisistiert");
+				if(genre == null) {
+					throw new Exception("Genre exisistiert nicht");
 				}
 				createMovieGenre(genre.getGenreId(), movie.getMovieId(), conn);
 			}
 			conn.commit();
 		} catch (Exception e) {
-			System.out.println(e);
 			conn.rollback();
+			throw e;
 		}
 		
 	}
@@ -149,8 +186,8 @@ public class MovieManager {
 			movie.delete(conn);
 			conn.commit();
 		} catch (Exception e) {
-			System.out.println(e);
 			conn.rollback();
+			throw e;
 		}
 	}
 
@@ -187,6 +224,7 @@ public class MovieManager {
 			movieDTO.setYear(movie.getYear());
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		}
 		return movieDTO;
 	}

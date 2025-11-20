@@ -15,7 +15,18 @@ import java.util.List;
 public class MovieFactory {
     
 
-
+    /**
+     * Lädt ein {@link Movie}-Objekt aus dem aktuellen Datensatz eines ResultSet.
+     *
+     * Diese Methode liest die Spalten {@code movieid}, {@code title}, {@code year}
+     * und {@code type} aus dem übergebenen {@code ResultSet} und erzeugt daraus ein
+     * vollständig initialisiertes {@link Movie}-Objekt. Es wird vorausgesetzt, dass
+     * sich der Cursor des ResultSet bereits auf einem gültigen Datensatz befindet.
+     *
+     * @param rs Das ResultSet, aus dem die Filmdaten geladen werden sollen.
+     * @return Ein {@link Movie}-Objekt, das aus dem aktuellen Datensatz erzeugt wurde.
+     * @throws Exception Wenn beim Auslesen der Daten ein Fehler auftritt.
+     */
     private static Movie loadMovie(ResultSet rs) throws Exception {
         Movie movie = new Movie(rs.getLong("movieid"));
         movie.setTitle(rs.getString("title"));
@@ -48,7 +59,17 @@ public class MovieFactory {
     }
 
 
-
+    /**
+     * Ruft alle Filme aus der Tabelle {@code movie} ab.
+     *
+     * Diese Methode führt eine SELECT-Abfrage ohne Filter aus und lädt jeden
+     * gefundenen Datensatz über {@link #loadMovie(ResultSet)} in ein {@link Movie}-Objekt.
+     * Alle geladenen Filme werden in einer Liste gesammelt und zurückgegeben.
+     *
+     * @param conn Eine gültige Datenbankverbindung.
+     * @return Eine Liste aller in der Datenbank vorhandenen {@link Movie}-Objekte.
+     * @throws Exception Wenn ein Fehler beim Ausführen der Datenbankabfrage auftritt.
+     */
     public static List<Movie> getAll(Connection conn) throws Exception {
         List<Movie> movies = new ArrayList<>();
         String sql = "SELECT * FROM movie";
