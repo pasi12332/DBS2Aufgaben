@@ -33,11 +33,11 @@ public class SearchMovieDialogCallback {
 		movieDialog(null);
 	}
 
-	public void editMovie(int movieId) {
+	public void editMovie(long movieId) {
 		movieDialog(movieId);
 	}
 
-	public void deleteMovie(int movieId) {
+	public void deleteMovie(long movieId) {
 		try {
 			mm.deleteMovie(movieId);
 		} catch (Exception e) {
@@ -45,7 +45,7 @@ public class SearchMovieDialogCallback {
 		}
 	}
 
-	private void movieDialog(Integer movieId) {
+	private void movieDialog(Long movieId) {
 
 		MovieDTO movie;
 		if (movieId == null)

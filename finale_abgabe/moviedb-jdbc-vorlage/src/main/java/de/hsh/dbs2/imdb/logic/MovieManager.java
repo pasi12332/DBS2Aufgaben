@@ -131,7 +131,7 @@ public class MovieManager {
 	 * @param movieId id des zu löschenden Films
 	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
 	 */
-	public void deleteMovie(int movieId) throws Exception {
+	public void deleteMovie(long movieId) throws Exception {
 		Connection conn = null;
 		try { 
 			conn = DBConnection.getConnection();

@@ -9,7 +9,7 @@ import de.hsh.dbs2.imdb.util.DBConnection;
 public class Starter {
 
 	/**
-	 * @param args command line arguments (none)
+	 * @param args command line arguments (none)4
 	 */
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> new Starter().run());
