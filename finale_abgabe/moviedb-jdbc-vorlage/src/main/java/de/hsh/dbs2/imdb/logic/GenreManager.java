@@ -25,12 +25,13 @@ public class GenreManager {
 			for (Genre g : genres) {  
 				result.add(g.getGenre()); // Nur die Namen (Strings) in die Ergebnisliste packen
 			}
+			return result;
 			
 		} catch (Exception e) {
 			throw e;
 		}
 		
-		return result;
+		
 	}
 	/**
 	 * Ermittelt alle Genres, die einem bestimmten Film zugeordnet sind.
@@ -48,11 +49,12 @@ public class GenreManager {
         	for (Genre g : genres) {
             result.add(g.getGenre()); // Wandelt die Objekte in Strings um und packt sie ins HashSet
         	}
+			return result;
 
     	} catch (Exception e) {
         	throw e;
     	}
 
-    	return result;
+    	
 	}
 }
