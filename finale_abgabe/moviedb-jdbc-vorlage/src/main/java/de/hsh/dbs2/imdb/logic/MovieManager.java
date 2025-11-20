@@ -178,6 +178,7 @@ public class MovieManager {
 				characterDTO.setPlayer(PersonFactory.getNameByID(movieCharacter.getPlayerId(), conn));
 				movieDTO.addCharacter(characterDTO);
 			}
+			movieDTO.setId(movie.getMovieId());
 			movieDTO.setGenres(genres);
 			movieDTO.setTitle(movie.getTitle());
 			movieDTO.setType(movie.getType());
