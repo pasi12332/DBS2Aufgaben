@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
+import de.hsh.dbs2.imdb.util.DBConnection;
 
 
 public class SearchMovieDialog extends JFrame {
@@ -115,6 +117,12 @@ public class SearchMovieDialog extends JFrame {
 		
 		WindowListener windowListener = new WindowAdapter() {
 			public void windowClosing(WindowEvent w) {
+				try {
+					Connection conn = DBConnection.getConnection();
+					conn.close();
+				} catch (Exception e) {
+					System.out.println("error: " + e);
+				}
 				System.exit(0);
 			}
 		};

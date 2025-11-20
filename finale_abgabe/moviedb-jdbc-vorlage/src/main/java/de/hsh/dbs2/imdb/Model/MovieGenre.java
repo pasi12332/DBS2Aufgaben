@@ -42,7 +42,7 @@ public class MovieGenre {
             }
     }
     public void delete(Connection conn) throws Exception {
-        String sql= "DELETE FROM moviegenre WHERE movieID ? AND genreID = ?";
+        String sql= "DELETE FROM moviegenre WHERE movieID = ? AND genreID = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setLong(1, this.movieID);
                 pstmt.setLong(2,this.genreID);

@@ -1,5 +1,7 @@
 package de.hsh.dbs2.imdb;
 
+import java.sql.Connection;
+
 import javax.swing.SwingUtilities;
 
 import de.hsh.dbs2.imdb.gui.SearchMovieDialog;

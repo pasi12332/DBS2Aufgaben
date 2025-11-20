@@ -75,9 +75,7 @@ public class GenreManager {
     	} catch (Exception e) {
 			conn.rollback();
         	throw e;
-    	} finally {
-			conn.close();
-		}
+    	}
 
     	
 	}
