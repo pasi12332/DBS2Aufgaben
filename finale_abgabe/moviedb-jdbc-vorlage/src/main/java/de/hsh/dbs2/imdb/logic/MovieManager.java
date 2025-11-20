@@ -91,8 +91,9 @@ public class MovieManager {
 		Connection conn = null;
 		try {
 			conn = DBConnection.getConnection();
-			Movie movie = MovieFactory.findById(movieDTO.getId(), conn);
-			if(movie != null) {
+			Movie movie = new Movie();
+			if(movieDTO.getId() != null) {
+				movie = MovieFactory.findById(movieDTO.getId(), conn);
 				movie.setTitle(movieDTO.getTitle());
 				movie.setType(movieDTO.getType());
 				movie.setYear(movieDTO.getYear());
@@ -117,10 +118,11 @@ public class MovieManager {
 				if(genre.equals(null)) {
 					throw new Exception("Genre exisistiert");
 				}
-				createMovieGenre(genre.getGenreId(), movieDTO.getId(), conn);
+				createMovieGenre(genre.getGenreId(), movie.getMovieId(), conn);
 			}
 			conn.commit();
 		} catch (Exception e) {
+			System.out.println(e);
 			conn.rollback();
 		}
 		
@@ -143,6 +145,7 @@ public class MovieManager {
 			movie.delete(conn);
 			conn.commit();
 		} catch (Exception e) {
+			System.out.println(e);
 			conn.rollback();
 		}
 	}

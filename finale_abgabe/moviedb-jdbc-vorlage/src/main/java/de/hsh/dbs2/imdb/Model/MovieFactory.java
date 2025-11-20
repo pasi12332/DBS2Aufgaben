@@ -42,6 +42,8 @@ public class MovieFactory {
             if (rs.next()) {
                 return loadMovie(rs);
             }
+        } catch (Exception e) {
+            return null;
         }
         return null;
     }

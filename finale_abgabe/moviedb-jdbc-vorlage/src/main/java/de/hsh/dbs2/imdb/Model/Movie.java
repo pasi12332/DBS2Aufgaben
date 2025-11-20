@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hsh.dbs2.imdb.logic.GenreManager;
 import de.hsh.dbs2.imdb.logic.dto.MovieDTO;
 import de.hsh.dbs2.imdb.util.DBConnection;
 
@@ -91,7 +92,6 @@ public class Movie {
     public void delete(Connection conn) throws SQLException {
         String sql = "DELETE FROM movie WHERE movieid = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                
             pstmt.setLong(1, this.movieID);
 
             int affectedRows = pstmt.executeUpdate();
