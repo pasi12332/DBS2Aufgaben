@@ -114,6 +114,7 @@ public class MovieManager {
 				Long personid = PersonFactory.findByName(character.getPlayer(), conn);
 				createCharacterMovie(personid, character, movie.getMovieId(), position, conn);
 				position++;
+				System.out.println("Create Character: " + character.getCharacter());
 			}
 			
 			for(String genreS : movieDTO.getGenres()) {
@@ -177,6 +178,7 @@ public class MovieManager {
 				characterDTO.setCharacter(movieCharacter.getCharacter());
 				characterDTO.setPlayer(PersonFactory.getNameByID(movieCharacter.getPlayerId(), conn));
 				movieDTO.addCharacter(characterDTO);
+				System.out.println("found Character: " + characterDTO.getCharacter());
 			}
 			movieDTO.setId(movie.getMovieId());
 			movieDTO.setGenres(genres);
