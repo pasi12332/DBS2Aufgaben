@@ -19,7 +19,12 @@ public class GenreManager {
 	 */
 	public List<String> getGenres() throws Exception {
 		List<String> result = new ArrayList<>();
-		
+		try {
+            DBConnection.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+			System.exit(1);
+        }
 		Connection conn = null;
 		
 		try {
@@ -50,6 +55,12 @@ public class GenreManager {
 	public HashSet<String> getGenresByMovie(Long movieID) throws Exception {
 		HashSet<String> result = new HashSet<>();
 		Connection conn = null;
+		try {
+            DBConnection.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+			System.exit(1);
+        }
 		
 		try {
 			conn = DBConnection.getConnection();

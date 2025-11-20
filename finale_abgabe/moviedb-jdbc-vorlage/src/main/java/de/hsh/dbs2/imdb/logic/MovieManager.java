@@ -62,6 +62,12 @@ public class MovieManager {
 		List<MovieDTO> movieListDOT = new ArrayList<>();
 		Connection conn = null;
 		try {
+            DBConnection.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+			System.exit(1);
+        }
+		try {
 			conn = DBConnection.getConnection();
 			if (search.equals(null) || search.equals("")) {
 				for (Movie movie : MovieFactory.getAll(conn)) {

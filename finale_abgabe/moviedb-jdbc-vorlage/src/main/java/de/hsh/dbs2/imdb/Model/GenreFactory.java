@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hsh.dbs2.imdb.util.DBConnection;
 
 public class GenreFactory {
 
