@@ -19,7 +19,7 @@ public class GenreFactory {
 
     public static List<Genre> findByMovie(long movieID) throws Exception {
         List<Genre> genres = new ArrayList<>();
-        String sql = "SELECT * FROM moviegenre WHERE movieid = ?";
+        String sql = "SELECT * FROM MovieGenre WHERE movieid = ?";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, movieID);
@@ -27,8 +27,11 @@ public class GenreFactory {
             while (rs.next()) {
                 genres.add(findeByID(rs.getLong("genreid")));
             }
-            return genres;
+            
+        } catch (Exception e) {
+            System.out.println("error: " + e);
         }
+        return genres;
     }
 
 
