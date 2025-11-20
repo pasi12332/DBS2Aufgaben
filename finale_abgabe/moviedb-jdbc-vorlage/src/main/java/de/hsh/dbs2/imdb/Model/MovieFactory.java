@@ -108,6 +108,7 @@ public class MovieFactory {
                 movieCharacter.setPosition(rs.getInt("position"));
                 movieCharacter.setMovieId(movieid);
                 movieCharacter.setPlayerId(rs.getLong("personID"));
+                chracters.add(movieCharacter);
             }
             return chracters;
         }
