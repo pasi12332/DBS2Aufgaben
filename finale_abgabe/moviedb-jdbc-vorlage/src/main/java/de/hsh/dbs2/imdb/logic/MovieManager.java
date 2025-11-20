@@ -112,7 +112,7 @@ public class MovieManager {
 			int position = 1;
 			for(CharacterDTO character : movieDTO.getCharacters()) {
 				Long personid = PersonFactory.findByName(character.getPlayer(), conn);
-				createCharacterMovie(personid, character, movieDTO.getId(), position, conn);
+				createCharacterMovie(personid, character, movie.getMovieId(), position, conn);
 				position++;
 			}
 			
