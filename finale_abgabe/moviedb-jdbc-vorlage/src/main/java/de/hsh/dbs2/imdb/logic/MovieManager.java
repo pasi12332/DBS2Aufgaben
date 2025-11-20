@@ -106,9 +106,6 @@ public class MovieManager {
 			}
 			for(CharacterDTO character : movieDTO.getCharacters()) {
 				Long personid = PersonFactory.findByName(character.getPlayer());
-				if(personid == null ) { 
-					throw new Exception("Person exisistiert");
-				}
 				createCharacterMovie(personid, character, movieDTO.getId());
 			}
 			for(String genreS : movieDTO.getGenres()) {
@@ -121,8 +118,10 @@ public class MovieManager {
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
+		} finally {
+			conn.close();
 		}
-		conn.close();
+		
 	}
 
 	/**
@@ -143,6 +142,8 @@ public class MovieManager {
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
+		} finally {
+			conn.close();
 		}
 	}
 
