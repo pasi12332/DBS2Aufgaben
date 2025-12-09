@@ -5,11 +5,11 @@
     <persistence-unit name="movie">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
-        <class>de.hsh.inform.dbs2.entities.Movie</class>
-        <class>de.hsh.inform.dbs2.entities.Genre</class>
-        <class>de.hsh.inform.dbs2.entities.Person</class>
-        <class>de.hsh.inform.dbs2.entities.MovieCharacter</class>
-        
+            <class>de.hsh.dbs2.imdb.Model.Movie</class>
+            <class>de.hsh.dbs2.imdb.Model.Genre</class>
+            <class>de.hsh.dbs2.imdb.Model.Person</class>
+            <class>de.hsh.dbs2.imdb.Model.MovieCharacter</class>
+            
         <properties>
             <property name="jakarta.persistence.jdbc.driver"
                       value="org.postgresql.Driver" />
