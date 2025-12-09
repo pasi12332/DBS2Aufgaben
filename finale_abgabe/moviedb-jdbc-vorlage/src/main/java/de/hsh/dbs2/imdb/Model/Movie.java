@@ -1,150 +1,62 @@
 package de.hsh.dbs2.imdb.Model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * ActiveRecord-Klasse für Movie-Entität.
- * Repräsentiert einen Film in der Datenbank.
- * Bietet Methoden zum Einfügen, Aktualisieren und Löschen.
- */
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "UE08_MOVIE")
 public class Movie {
-    private Long movieID;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
     private String title;
-    private int year;
     private String type;
+    private int year;
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "UE08_MOVIE_GENRE",
+        joinColumns = @JoinColumn(name = "movie_id"),
+        inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<Genre> genres = new ArrayList<>();
 
-    public Movie(Long movieID) {
-        this.movieID = movieID;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MovieCharacter> characters = new ArrayList<>();
+
+    public Movie() {}
+
+    public Movie(String title, String type, int year) {
+        this.title = title;
+        this.type = type;
+        this.year = year;
     }
 
-    public Movie(){}
-
-
-    /**
-     * Fügt einen neuen Film in die Datenbank ein.
-     * Die generierte ID wird in movieID gespeichert.
-     * 
-     * @throws SQLException wenn ein Datenbankfehler auftritt
-     */
-    public void insert(Connection conn) throws SQLException {
-        String sql = "INSERT INTO movie (title, year, type) Values (?, ?, ?)";
-        try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            pstmt.setString(1, this.title);
-            pstmt.setInt(2, this.year);
-            pstmt.setString(3, this.type);
-
-            int affectedRows = pstmt.executeUpdate();
-
-            if(affectedRows == 0) {
-                throw new SQLException("Erstellen von Movie fehlgeschlagen, keine Zeilen geändert.");
-            }
-
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    this.movieID = generatedKeys.getLong(1);
-                } else {
-                    throw new SQLException("Erstellen von Movie fehlgeschlagen, keine ID erhalten.");
-                }
-            }
-        }
+    public void addGenre(Genre genre) {
+        this.genres.add(genre);
+        genre.getMovies().add(this);
     }
-
-    /**
-     * Aktualisiert einen bestehenden Film in der Datenbank.
-     * Der Film wird anhand seiner ID identifiziert.
-     * 
-     * @throws SQLException wenn ein Datenbankfehler auftritt
-     */
-    public void update(Connection conn) throws SQLException {
-        String sql = "UPDATE movie SET title = ?, year = ?, type = ? WHERE movieid = ?";
-        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                
-            pstmt.setString(1, this.title);
-            pstmt.setInt(2, this.year);
-            pstmt.setString(3, this.type);
-            pstmt.setLong(4, this.movieID);
-
-            int affectedRows = pstmt.executeUpdate();
-            if(affectedRows == 0) {
-                throw new SQLException("Aktualisieren von Movie fehlgeschlagen, keine Zeilen geändert.");
-            }
-        }
-    }
-
-    /**
-     * Löscht einen Film aus der Datenbank.
-     * Der Film wird anhand seiner ID identifiziert.
-     * 
-     * @throws SQLException wenn ein Datenbankfehler auftritt
-     */
-    public void delete(Connection conn) throws Exception {
-        String sql = "DELETE FROM movie WHERE movieid = ?";
-        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, this.movieID);
-            for(MovieGenre movieGenre : MovieGenreFactory.findByMovie(this.movieID, conn)) {
-                movieGenre.delete(conn);
-            }
-            MovieFactory.deleteCharactersByMovieId(this.movieID, conn);
-            int affectedRows = pstmt.executeUpdate();
-            if(affectedRows == 0) {
-                throw new SQLException("Löschen von Movie fehlgeschlagen, keine Zeilen geändert.");
-            }
-        }
-    }
-
-
-    /**
-     * Setzt den Filmtitel.
-     * 
-     * @param title der Titel des Films
-     */
-    public void setTitle(String title){ this.title = title; }
-
-    /**
-     * Setzt das Erscheinungsjahr des Films.
-     * 
-     * @param year das Jahr
-     */
-    public void setYear(int year){ this.year = year; }
-
-    /**
-     * Setzt den Filmtyp.
-     * 
-     * @param type der Typ des Films
-     */
-    public void setType(String type){ this.type = type; }
-
-    /**
-     * Gibt die Film-ID zurück.
-     * 
-     * @return die Film-ID
-     */
-    public Long getMovieId() { return this.movieID; }
     
-    /**
-     * Gibt den Filmtitel zurück.
-     * 
-     * @return der Titel des Films
-     */
-    public String getTitle() { return this.title; }
-    
-    /**
-     * Gibt das Erscheinungsjahr zurück.
-     * 
-     * @return das Jahr
-     */
-    public int getYear() { return this.year; }
-    
-    /**
-     * Gibt den Filmtyp zurück.
-     * 
-     * @return der Typ des Films
-     */
-    public String getType() { return this.type; }
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
+    public List<Genre> getGenres() { return genres; }
+    public List<MovieCharacter> getCharacters() { return characters; }
 }

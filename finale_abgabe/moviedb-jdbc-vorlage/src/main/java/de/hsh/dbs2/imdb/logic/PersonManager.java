@@ -1,45 +1,40 @@
 package de.hsh.dbs2.imdb.logic;
 
-import java.sql.Connection;
 import java.util.List;
 
-import de.hsh.dbs2.imdb.Model.PersonFactory;
-import de.hsh.dbs2.imdb.util.DBConnection;
+import de.hsh.dbs2.imdb.util.EMFSingleton;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 public class PersonManager {
-	/**
-	 * Liefert eine Liste aller Personen, deren Name den Suchstring enthaelt.
-	 * @param name Suchstring
-	 * @return Liste mit passenden Personennamen, die in der Datenbank eingetragen sind.
-	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
-	 */
-	public List<String> getPersonList(String name) throws Exception {
-		Connection conn = null;
-		try {
-			conn = DBConnection.getConnection();
-			return PersonFactory.getPersonListByName(name, conn);
-		} catch (Exception e) {
-			conn.rollback();
-			throw e;
-		}
-				
-	}
-				
-	/**
-	 * Liefert die ID einer Person, deren Name genau name ist. Wenn die Person nicht existiert,
-	 * wird eine Exception geworfen.
-	 * @param name Exakter Name der Person
-	 * @return ID der Person
-	 * @throws Exception Beschreibt evtl. aufgetretenen Fehler
-	 */
-	public Long getPerson(String name) throws Exception {
-		Connection conn = null;
-		try {
-			conn = DBConnection.getConnection();
-			return PersonFactory.findByName(name, conn);
-		} catch (Exception e) {
-			conn.rollback();
-			throw e;
-		}
-	}
+
+
+    public List<String> getPersonList(String name) throws Exception {
+        EntityManager em = EMFSingleton.getEntityManagerFactory().createEntityManager();
+        try {
+            TypedQuery<String> query = em.createQuery(
+                "SELECT p.name FROM Person p WHERE p.name LIKE :search", String.class);
+            query.setParameter("search", "%" + name + "%");
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+                
+
+    public Long getPerson(String name) throws Exception {
+        EntityManager em = EMFSingleton.getEntityManagerFactory().createEntityManager();
+        try {
+            TypedQuery<Long> query = em.createQuery(
+                "SELECT p.id FROM Person p WHERE p.name = :name", Long.class);
+            query.setParameter("name", name);
+            
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new Exception("Person nicht gefunden: " + name);
+        } finally {
+            em.close();
+        }
+    }
 }

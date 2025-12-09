@@ -1,69 +1,36 @@
 package de.hsh.dbs2.imdb.Model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * ActiveRecord-Klasse für Genre-Entität.
- * Repräsentiert ein Film-Genre in der Datenbank.
- */
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "UE08_GENRE")
 public class Genre {
-    private Long genreID;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id; 
+
     private String genre;
 
+    @ManyToMany(mappedBy = "genres")
+    private List<Movie> movies = new ArrayList<>();
 
     public Genre() {}
-    public Genre(Long genreID) { this.genreID = genreID; }
 
-    /**
-     * Fügt ein neues Genre in die Datenbank ein.
-     * Die generierte ID wird in genreID gespeichert.
-     * 
-     * @throws SQLException wenn ein Datenbankfehler auftritt
-     */
-    public void insert(Connection conn) throws SQLException {
-        String sql = "INSERT INTO genre (genre) Values (?)";
-        try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-                pstmt.setString(1, genre);
-
-                int affectedRows = pstmt.executeUpdate();
-
-                if(affectedRows == 0) {
-                    throw new SQLException("Erstellen von Genre fehlgeschlagen, keine Zeilen geändert.");
-                }
-
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        this.genreID = generatedKeys.getLong(1);
-                    } else {
-                        throw new SQLException("Erstellen von Genre fehlgeschlagen, keine ID erhalten.");
-                    }
-                }
-        }
+    public Genre(String genre) {
+        this.genre = genre;
     }
 
-    /**
-     * Setzt den Genre-Namen.
-     * 
-     * @param genre der Name des Genres
-     */
+    public Long getId() { return id; }
+    public String getGenre() { return genre; }
     public void setGenre(String genre) { this.genre = genre; }
-    
-    /**
-     * Gibt die Genre-ID zurück.
-     * 
-     * @return die Genre-ID
-     */
-    public Long getGenreId() { return this.genreID; }
-    
-    /**
-     * Gibt den Genre-Namen zurück.
-     * 
-     * @return der Genre-Name
-     */
-    public String getGenre() { return this.genre; }
+    public List<Movie> getMovies() { return movies; }
 }
