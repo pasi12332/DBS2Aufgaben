@@ -1,3 +1,0 @@
-db.url=jdbc:postgresql://pgserv.inform.hs-hannover.de:5432/db01
-db.user=xxxx
-db.password=yyyy
